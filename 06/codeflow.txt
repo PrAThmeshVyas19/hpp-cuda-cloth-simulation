@@ -1,0 +1,120 @@
++--------------------+
+| WinMain (Entry)    |
++--------------------+
+        |
+        v
++--------------------+
+| initialize()       |
+| - OpenGL & CUDA   |
+| - Shaders, Textures|
+| - Cloth Grid      |
++--------------------+
+        |
+        v
++--------------------+
+| Message Loop      |
+| (Processes Input) |
++--------------------+
+        |
+        v
++--------------------+      +-----------------+
+| display()         | ----> | update()        |
+| - Render Cloth   |      | - Compute Cloth  |
+| - Apply Textures |      | - Animate Waves |
++--------------------+      +-----------------+
+        |
+        v
++--------------------+
+| uninitialize()     |
+| - Cleanup OpenGL  |
+| - Unregister CUDA |
++--------------------+
+
+
+
+
+// Cuda flow 
++--------------------+
+| initialize()       |
+| - Check CUDA      |
+| - Set Device      |
+| - Call initCUDA() |
++--------------------+
+        |
+        v
++--------------------+
+| initCUDA()         |
+| - Register OpenGL  |
+|   buffer to CUDA   |
++--------------------+
+        |
+        v
++--------------------+
+| display()          |
+| - If useCUDA       |
+| - Call computeClothCUDA() |
++--------------------+
+        |
+        v
++--------------------+
+| computeClothCUDA() |
+| - Map VBO to CUDA |
+| - Execute Kernel  |
+| - Unmap VBO       |
++--------------------+
+        |
+        v
++--------------------+
+| cleanupCUDA()      |
+| - Unregister VBO  |
++--------------------+
+
+
+
+
+// Cuda Function flow
++---------------------+
+|   initialize()      |
+|---------------------|
+| - Check CUDA support |
+|   using cudaGetDeviceCount() |
+| - Set CUDA device using cudaSetDevice(0) |
+| - Call initCUDA() |
++---------------------+
+        |
+        v
++---------------------+
+|   initCUDA()       |
+|---------------------|
+| - Register OpenGL buffer |
+|   vbo_gpu with CUDA using |
+|   cudaGraphicsGLRegisterBuffer() |
++---------------------+
+        |
+        v
++---------------------+
+|     display()      |
+|---------------------|
+| - If useCUDA is enabled, |
+|   call computeClothCUDA() |
++---------------------+
+        |
+        v
++---------------------------+
+|  computeClothCUDA()       |
+|---------------------------|
+| - Map OpenGL buffer to CUDA |
+|   using cudaGraphicsMapResources() |
+| - Execute CUDA kernel to update cloth |
+| - Unmap the buffer using |
+|   cudaGraphicsUnmapResources() |
++---------------------------+
+        |
+        v
++---------------------+
+|   cleanupCUDA()    |
+|---------------------|
+| - Unregister CUDA-OpenGL |
+|   buffer using |
+|   cudaGraphicsUnregisterResource() |
++---------------------+

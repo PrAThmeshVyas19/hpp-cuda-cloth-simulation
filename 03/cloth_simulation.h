@@ -1,0 +1,8 @@
+#ifndef CLOTH_SIMULATION_H
+#define CLOTH_SIMULATION_H
+
+#define POINTS_X 100
+#define POINTS_Y 100
+#define POINTS_TOTAL (POINTS_X * POINTS_Y)
+
+#endif // CLOTH_SIMULATION_H
